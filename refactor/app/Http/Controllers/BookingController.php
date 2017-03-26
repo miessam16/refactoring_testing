@@ -35,17 +35,18 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
-        if($user_id = $request->get('user_id')) {
 
-            $response = $this->repository->getUsersJobs($user_id);
+        $response = [];
 
-        }
-        elseif($request->__authenticatedUser->user_type == env('ADMIN_ROLE_ID') || $request->__authenticatedUser->user_type == env('SUPERADMIN_ROLE_ID'))
-        {
+        if ($request->user()->is('admin') || $request->user()->is('super_admin')) {
             $response = $this->repository->getAll($request);
         }
 
-        return response($response);
+        elseif($request->get('user_id')) {
+            $response = $this->repository->getUsersJobs($request->get('user_id'));
+        }
+
+        return response()->json($response);
     }
 
     /**
